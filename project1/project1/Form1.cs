@@ -14,7 +14,7 @@ namespace project1
 {
     public partial class Form1 : Form
     {
-        private int maNv;
+       /* private int maNv;*/
         public Form1()
         {
             InitializeComponent();
@@ -54,7 +54,7 @@ namespace project1
         private void dgvNhanVien_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int index = e.RowIndex;
-            maNv = e.RowIndex;
+            /*maNv = e.RowIndex;*/
             if(index >= 0)
             {
                 txbTenNhanVien.Text = dgvNhanVien.Rows[index].Cells["HoTen"].Value.ToString();
@@ -70,15 +70,16 @@ namespace project1
             string sapXep = com.Text;
             if(sapXep == "Họ tên tăng dần")
             {
-                dgvNhanVien.DataSource = NhanVienDAO.Instance.sapXepHoTenTangDan();
+                /*dgvNhanVien.DataSource = NhanVienDAO.Instance.sapXepHoTenTangDan();*/
+                dgvNhanVien.Sort(this.dgvNhanVien.Columns["Hoten"], ListSortDirection.Ascending);
             }
             if (sapXep == "Lương tăng dần")
             {
-                dgvNhanVien.DataSource = NhanVienDAO.Instance.sapXepLuongTangDan();
+                dgvNhanVien.Sort(this.dgvNhanVien.Columns["Luong"], ListSortDirection.Ascending);
             }
             if (sapXep == "Lương giảm dần")
             {
-                dgvNhanVien.DataSource = NhanVienDAO.Instance.sapXepLuongGiamDan();
+                dgvNhanVien.Sort(this.dgvNhanVien.Columns["Luong"], ListSortDirection.Descending);
             }
            
         }
@@ -129,17 +130,29 @@ namespace project1
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            NhanVien nv = new NhanVien(maNv);
-            if(NhanVienDAO.Instance.deleteNhanVien(nv) != 0)
+            int maNv;
+            foreach(DataGridViewRow row in dgvNhanVien.Rows)
             {
-                loadDataGrid();
-                setDeFaultButton();
-                MessageBox.Show("Xóa thành công");
+                foreach(DataGridViewCell cell in row.Cells)
+                {
+                    if (cell.Selected == true)
+                    {
+                        maNv = Convert.ToInt32(dgvNhanVien.Rows[cell.RowIndex].Cells["MaNv"].Value.ToString());
+                        NhanVien nv = new NhanVien(maNv);
+                        if (NhanVienDAO.Instance.deleteNhanVien(nv) != 0)
+                        {
+                            loadDataGrid();
+                            setDeFaultButton();
+                            MessageBox.Show("Xóa thành công");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Xóa thất bại");
+                        }
+                    }
+                }
             }
-            else
-            {
-                MessageBox.Show("Xóa thất bại");
-            }
+            
         }
     }
 }
